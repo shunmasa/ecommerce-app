@@ -1,0 +1,36 @@
+.header{
+    width:100%;
+    background-color:blue;
+    color:white;
+    padding:0 .5em;
+    // margin-top:50px;
+   
+
+}
+.headerContainer{
+    display:flex;
+    justify-content:space-between;
+    align-items: center;
+}
+.headerTitle{
+    font-size:2em;
+}
+
+.p{
+    margin:0;
+}
+
+.headerCart{
+    button{
+    background:transparent;
+    color:inherit;
+    border:none;
+    display:flex;
+    justify-content:center;
+    align-items: center;
+    cursor: pointer;
+    svg{
+        margin-right:.5em;
+    }
+}
+}
