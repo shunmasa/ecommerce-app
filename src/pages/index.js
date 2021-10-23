@@ -5,9 +5,16 @@ import Header from '@components/Header'
 import Container from '@components/Container'
 import Button from '@components/Button'
 import styles from '@styles/Home.module.scss'
-import products from '@data/products.json'
+// import products from '@data/products.json'
 
-export default function Home() {
+import {
+  ApolloClient,
+  InMemoryCache,
+  gql
+} from "@apollo/client";
+
+export default function Home({products}) {
+  // console.log(name)
   return (
     <div>
       <Head>
@@ -30,24 +37,31 @@ export default function Home() {
 
       <ul className={styles.products}>
        {products.map(product=>{
-
+       const {featuredImage} = product;
          return (
           <li key={product.id}>
-          <Image width="864" height="1200" src={product.image} alt="title"/>
-          <h3 className={styles.productTitle}>{product.title}</h3>
-          <p className={styles.productPrice}> 
-           {`$${product.price}`}
-          </p>
+          <div className={styles.productImage}>
+                      <Image width={featuredImage.mediaDetails.width} height={featuredImage.mediaDetails.height} src={featuredImage.sourceUrl} alt={featuredImage.altText} />
+                    </div>
+                    <h3 className={styles.productTitle}>
+                      { product.title }
+                    </h3>
+                    <p className={styles.productPrice}>
+                      {product.productPrice }
+                    </p>
           <p>
-            <Button className="snipcart-add-item"
-  data-item-id={product.id}
-  data-item-price={product.price}
-  data-item-url="/"//redirect to homepage in order not to have single params on page 
-  data-item-description=""
-  data-item-image={product.image}
-  data-item-name={product.title}>
+          <Button
+                    className="snipcart-add-item"
+                    data-item-id={product.productId}
+                    data-item-price={product.productPrice}
+                    data-item-url="/"
+                    data-item-description=""
+                    data-item-image={featuredImage.sourceUrl}
+                    data-item-name={product.title}
+                    data-item-max-quantity={1}
+                  >
   Add to cart
-{product.title}</Button>
+</Button>
           </p>
           </li>
          )
@@ -69,4 +83,69 @@ export default function Home() {
 <div hidden id="snipcart" data-api-key={process.env.NEXT_PUBLIC_SNIPCART_API_KEY}/>
     </div>
   )
+}
+
+
+export async function getStaticProps(){
+  const client = new ApolloClient({
+    uri: 'https://ecommerce-web.tastewp.com/graphql',
+    cache: new InMemoryCache()
+  });
+
+  const response = await client.query({
+  query:gql`
+    query AllProducts {
+      products {
+   edges{
+  node{
+    id
+    content
+    title
+    uri
+    product{
+      productId
+      productPrice
+    }
+    slug
+    featuredImage {
+                node {
+                  altText
+                  sourceUrl
+                  mediaDetails {
+                    height
+                    width
+                  }
+                }
+    }
+  }
+}
+}
+}
+    `
+  })
+ //node destructed one level 
+ const products = response.data.products.edges.map(({ node }) => {
+  const data = {
+    ...node,
+    ...node.product,
+    featuredImage: {
+      ...node.featuredImage.node
+    }
+  }
+  return data;
+})
+
+
+  console.log(products)
+
+return {
+  props:{
+    products
+  }
+}
+// return {
+//   props:{
+//     name:"masa"
+//   }
+// }
 }
