@@ -1,6 +1,6 @@
 import Header from '@components/Header'
 import Footer from '@components/Footer'
-import styles from './layout.module.scss'
+import styles from './Layout.module.scss'
 import Head from 'next/head'
 
 const Layout = ({children,className,...rest}) =>{
