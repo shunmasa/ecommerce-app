@@ -34,7 +34,7 @@ export default function Product({product}) {
           <div className={styles.productContent}>
             <h1>{ product.title }</h1>
             <div dangerouslySetInnerHTML={{
-              __html: product.content
+              __html: product.content// _html content data has <p></p> use p tag from data 
             }} />
             <p className={styles.productPrice}>
               ${ product.productPrice }
@@ -56,8 +56,6 @@ export default function Product({product}) {
           </div>
         </div>
       </Container>
-
-
     </Layout>
   )
 }
@@ -67,7 +65,7 @@ export async function getStaticProps({params}){
   const {productSlug} = params; //params.productSlug
   console.log("slug",productSlug)
   const client = new ApolloClient({
-    uri: 'https://ecommerce-web.tastewp.com/graphql',
+    uri: 'https://spectacle-web.com/graphql',
     cache: new InMemoryCache()
   });
   const response = await client.query({
@@ -143,20 +141,19 @@ export async function getStaticPaths(){
         cache: new InMemoryCache()
       });
       const response = await client.query({
-      query: gql`
-       query AllProducts {
-      products {
-      edges{
-      node{
-         id
-         slug
-      }
-       }    
-      }  
-       } 
-      `
-    });
-   
+        query: gql`
+          query AllProducts {
+            products {
+              edges {
+                node {
+                  id
+                  slug
+                }
+              }
+            }
+          }
+        `
+      });
     const paths = response.data.products.edges.map(({ node }) => {
  
       return {
